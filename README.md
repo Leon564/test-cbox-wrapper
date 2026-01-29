@@ -1,36 +1,83 @@
-This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://nextjs.org/docs/app/api-reference/cli/create-next-app).
+# CBox Chat Wrapper
 
-## Getting Started
+Una aplicación Next.js que envuelve el chat de CBox en pantalla completa y permite inyectar código directamente en el textarea del chat.
 
-First, run the development server:
+## Características
+
+✅ **Iframe en pantalla completa**: El chat ocupa toda la ventana del navegador  
+✅ **Inyección de código sin CORS**: Componente que permite enviar código al textarea del chat  
+✅ **API proxy**: Para manejar peticiones sin problemas de CORS  
+✅ **Interfaz intuitiva**: Botón flotante y atajos de teclado para facilidad de uso  
+
+## Instalación
 
 ```bash
-npm run dev
-# or
-yarn dev
-# or
-pnpm dev
-# or
-bun dev
+npm install
+# o
+pnpm install
 ```
 
-Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
+## Uso
 
-You can start editing the page by modifying `app/page.tsx`. The page auto-updates as you edit the file.
+### Desarrollo
+```bash
+npm run dev
+# o
+pnpm dev
+```
 
-This project uses [`next/font`](https://nextjs.org/docs/app/building-your-application/optimizing/fonts) to automatically optimize and load [Geist](https://vercel.com/font), a new font family for Vercel.
+### Producción
+```bash
+npm run build
+npm start
+```
 
-## Learn More
+## Características principales
 
-To learn more about Next.js, take a look at the following resources:
+### 1. Iframe en pantalla completa
+El chat se muestra ocupando toda la ventana del navegador para una experiencia inmersiva.
 
-- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
-- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
+### 2. Inyección de código
+Hay varias maneras de inyectar código en el textarea del chat:
 
-You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js) - your feedback and contributions are welcome!
+#### Botón flotante
+- Haz clic en el botón azul con el icono de código (esquina superior derecha)
+- Se abrirá un modal donde puedes pegar tu código
+- Haz clic en "Inyectar" para enviarlo al chat
 
-## Deploy on Vercel
+#### Atajos de teclado
+- **Ctrl + Shift + I**: Abrir/cerrar el panel de inyección
+- **Escape**: Cerrar el panel
 
-The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
+### 3. Manejo de CORS
 
-Check out our [Next.js deployment documentation](https://nextjs.org/docs/app/building-your-application/deploying) for more details.
+La aplicación incluye un proxy API en `/api/proxy` que:
+- Evita problemas de CORS al hacer peticiones al servidor de CBox
+- Mantiene las cookies y headers originales
+- No interfiere con los estilos o funcionalidad del chat original
+
+## Solución de problemas
+
+### El código no se inyecta
+1. **Verifica que el iframe haya cargado completamente**
+2. **Revisa la consola del navegador** para errores CORS
+3. **Asegúrate de que el selector del textarea sea correcto**
+4. **Si hay CORS**, el sistema intentará usar el proxy automáticamente
+
+### El botón flotante no aparece
+1. **Verifica que no haya errores de JavaScript** en la consola
+2. **Asegúrate de que el componente IframeWrapper** se esté utilizando correctamente
+
+## Seguridad
+
+- El proxy solo permite peticiones a dominios de CBox (`*.cbox.ws`)
+- No se almacenan credenciales ni datos sensibles
+- Las peticiones mantienen los headers de seguridad originales
+
+## Tecnologías
+
+- **Next.js 16.1.6**: Framework de React
+- **React 19**: Biblioteca de UI  
+- **TypeScript**: Tipado estático
+- **Tailwind CSS**: Estilos utilitarios
+- **API Routes**: Proxy server integrado
