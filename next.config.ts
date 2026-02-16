@@ -18,12 +18,23 @@ const nextConfig: NextConfig = {
     ];
   },
   
-  // Optional: Add rewrites if you want cleaner URLs
+  // Rewrites for cleaner URLs and better proxying
   async rewrites() {
     return [
       {
         source: '/cbox',
         destination: '/api/proxy?boxid=3548579&boxtag=ZJc4tl',
+      },
+      // Catch any /api requests and proxy them to cbox.ws
+      {
+        source: '/api',
+        has: [
+          {
+            type: 'query',
+            key: 'sec',
+          },
+        ],
+        destination: '/api/proxy/cbox/api',
       },
     ];
   },

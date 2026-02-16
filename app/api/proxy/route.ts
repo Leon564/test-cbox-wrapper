@@ -21,8 +21,21 @@ export async function GET(request: NextRequest) {
     
     // Modify URLs in the response to point to our proxy
     const modifiedData = data
+      // Replace absolute URLs
       .replace(/https?:\/\/www3\.cbox\.ws/g, '/api/proxy/cbox')
-      .replace(/https?:\/\/www\d*\.cbox\.ws/g, '/api/proxy/cbox');
+      .replace(/https?:\/\/www\d*\.cbox\.ws/g, '/api/proxy/cbox')
+      // Replace relative URLs in src, href, and action attributes
+      .replace(/src=["']\/(?!api\/proxy)/g, 'src="/api/proxy/cbox/')
+      .replace(/href=["']\/(?!api\/proxy)/g, 'href="/api/proxy/cbox/')
+      .replace(/action=["']\/(?!api\/proxy)/g, 'action="/api/proxy/cbox/')
+      // Replace in JavaScript strings
+      .replace(/(['"])\/api\?/g, '$1/api/proxy/cbox/api?')
+      .replace(/\burl\s*:\s*['"]\/(?!api\/proxy)/g, 'url:"/api/proxy/cbox/')
+      // Replace fetch and XHR calls
+      .replace(/fetch\s*\(\s*['"]\/(?!api\/proxy)/g, 'fetch("/api/proxy/cbox/')
+      .replace(/open\s*\(\s*['"][^'"]+['"]\s*,\s*['"]\/(?!api\/proxy)/g, (match) => {
+        return match.replace(/['"]\//, '"/api/proxy/cbox/');
+      });
 
     return new NextResponse(modifiedData, {
       status: response.status,
