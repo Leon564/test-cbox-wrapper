@@ -35,9 +35,11 @@ export async function GET(request: NextRequest) {
       let data = await response.text();
       // Replace cbox.ws URLs in JS/CSS files
       data = data
-        .replace(/https?:\/\/www\d*\.cbox\.ws/g, '/api/proxy/cbox')
-        .replace(/(['"])\/api\?/g, '$1/api/proxy/cbox/api?')
-        .replace(/\burl\s*:\s*['"]\/(?!api\/proxy)/g, 'url:"/api/proxy/cbox/');
+        .replace(/https?:\/\/static\.cbox\.ws\//g, '/api/proxy/cbox/static.cbox.ws/')
+        .replace(/https?:\/\/www3\.cbox\.ws\//g, '/api/proxy/cbox/www3.cbox.ws/')
+        .replace(/https?:\/\/www\d*\.cbox\.ws\//g, '/api/proxy/cbox/www3.cbox.ws/')
+        .replace(/(['"])\/api\?/g, '$1/api/proxy/cbox/www3.cbox.ws/api?')
+        .replace(/\burl\s*:\s*['"]\/api\?/g, 'url:"/api/proxy/cbox/www3.cbox.ws/api?');
       
       return new NextResponse(data, {
         status: response.status,

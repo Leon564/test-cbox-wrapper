@@ -9,7 +9,20 @@ export async function GET(
   const searchParams = request.nextUrl.searchParams.toString();
   const queryString = searchParams ? `?${searchParams}` : '';
   
-  const targetUrl = `https://www3.cbox.ws/${path}${queryString}`;
+  // Reconstruct the full URL with proper subdomain
+  // Path format: subdomain.cbox.ws/resource or www3.cbox.ws/resource
+  let targetUrl: string;
+  
+  if (path.includes('.cbox.ws/')) {
+    // Path contains full domain: static.cbox.ws/jsc/file.js
+    targetUrl = `https://${path}${queryString}`;
+  } else if (path.startsWith('static.cbox.ws') || path.startsWith('www3.cbox.ws') || path.match(/^www\d+\.cbox\.ws/)) {
+    // Path starts with domain: static.cbox.ws or www3.cbox.ws
+    targetUrl = `https://${path}${queryString}`;
+  } else {
+    // Regular path: assume www3.cbox.ws
+    targetUrl = `https://www3.cbox.ws/${path}${queryString}`;
+  }
   
   try {
     const response = await fetch(targetUrl, {
@@ -26,12 +39,14 @@ export async function GET(
       let data = await response.text();
       // Replace cbox.ws URLs in JS/CSS files
       data = data
-        .replace(/https?:\/\/www\d*\.cbox\.ws/g, '/api/proxy/cbox')
-        .replace(/(['"])\/api\?/g, '$1/api/proxy/cbox/api?')
-        .replace(/\burl\s*:\s*['"]\/(?!api\/proxy)/g, 'url:"/api/proxy/cbox/')
-        .replace(/fetch\s*\(\s*['"]\/(?!api\/proxy)/g, 'fetch("/api/proxy/cbox/')
-        .replace(/src=["']\/(?!api\/proxy)/g, 'src="/api/proxy/cbox/')
-        .replace(/href=["']\/(?!api\/proxy)/g, 'href="/api/proxy/cbox/');
+        .replace(/https?:\/\/static\.cbox\.ws\//g, '/api/proxy/cbox/static.cbox.ws/')
+        .replace(/https?:\/\/www3\.cbox\.ws\//g, '/api/proxy/cbox/www3.cbox.ws/')
+        .replace(/https?:\/\/www\d*\.cbox\.ws\//g, '/api/proxy/cbox/www3.cbox.ws/')
+        .replace(/(['"])\/api\?/g, '$1/api/proxy/cbox/www3.cbox.ws/api?')
+        .replace(/\burl\s*:\s*['"]\/api\?/g, 'url:"/api/proxy/cbox/www3.cbox.ws/api?')
+        .replace(/fetch\s*\(\s*['"]\/api\?/g, 'fetch("/api/proxy/cbox/www3.cbox.ws/api?')
+        .replace(/src=["']\/(?!api\/proxy)/g, 'src="/api/proxy/cbox/www3.cbox.ws/')
+        .replace(/href=["']\/(?!api\/proxy)/g, 'href="/api/proxy/cbox/www3.cbox.ws/');
       
       return new NextResponse(data, {
         status: response.status,
@@ -71,7 +86,16 @@ export async function POST(
   const searchParams = request.nextUrl.searchParams.toString();
   const queryString = searchParams ? `?${searchParams}` : '';
   
-  const targetUrl = `https://www3.cbox.ws/${path}${queryString}`;
+  // Reconstruct the full URL with proper subdomain
+  let targetUrl: string;
+  
+  if (path.includes('.cbox.ws/')) {
+    targetUrl = `https://${path}${queryString}`;
+  } else if (path.startsWith('static.cbox.ws') || path.startsWith('www3.cbox.ws') || path.match(/^www\d+\.cbox\.ws/)) {
+    targetUrl = `https://${path}${queryString}`;
+  } else {
+    targetUrl = `https://www3.cbox.ws/${path}${queryString}`;
+  }
   
   try {
     const body = await request.arrayBuffer();
